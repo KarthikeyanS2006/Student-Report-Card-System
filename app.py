@@ -271,4 +271,4 @@ class ReportCardSystem:
 # Run the program
 if __name__ == "__main__":
     system = ReportCardSystem()
-    system.run()
+    # system.run()
