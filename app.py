@@ -42,131 +42,75 @@ class ReportCardSystem:
         else:
             return 'F'
     
-    def add_student(self):
-        """Add new student with marks"""
-        print("\n" + "="*50)
-        print("ADD NEW STUDENT")
-        print("="*50)
+    def add_student_automated(self, student_id, name, math, science, english, social, computer):
+        """Add student with marks (automated)"""
+        marks = [math, science, english, social, computer]
+        if any(mark < 0 or mark > 100 for mark in marks):
+            return "❌ Error: Marks must be between 0 and 100!"
+
+        total = sum(marks)
+        percentage = total / 5
+        grade = self.calculate_grade(percentage)
         
-        try:
-            student_id = input("Enter Student ID: ").strip()
-            name = input("Enter Student Name: ").strip()
-            
-            # Input marks for each subject
-            print("\nEnter marks for each subject (out of 100):")
-            math = float(input("Mathematics: "))
-            science = float(input("Science: "))
-            english = float(input("English: "))
-            social = float(input("Social Studies: "))
-            computer = float(input("Computer: "))
-            
-            # Validate marks
-            marks = [math, science, english, social, computer]
-            if any(mark < 0 or mark > 100 for mark in marks):
-                print("❌ Error: Marks must be between 0 and 100!")
-                return
-            
-            # Calculate total and percentage
-            total = sum(marks)
-            percentage = total / 5
-            grade = self.calculate_grade(percentage)
-            
-            # Save to CSV
-            with open(self.csv_file, 'a', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow([student_id, name, math, science, english, 
-                               social, computer, total, round(percentage, 2), grade])
-            
-            print(f"\n✓ Student {name} added successfully!")
-            print(f"  Total: {total}/500 | Percentage: {percentage:.2f}% | Grade: {grade}")
-            
-        except ValueError:
-            print("❌ Error: Please enter valid numeric marks!")
-        except Exception as e:
-            print(f"❌ Error: {e}")
-    
-    def view_all_students(self):
-        """Display all students in a formatted table"""
-        print("\n" + "="*50)
-        print("ALL STUDENTS RECORDS")
-        print("="*50)
+        with open(self.csv_file, 'a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([student_id, name, math, science, english, 
+                           social, computer, total, round(percentage, 2), grade])
         
+        return f"✓ Student {name} added successfully!"
+
+    def view_all_students_automated(self):
+        """Display all students (automated)"""
         try:
             with open(self.csv_file, 'r') as file:
                 reader = csv.reader(file)
                 data = list(reader)
                 
                 if len(data) <= 1:
-                    print("No student records found!")
-                    return
+                    return "No student records found!"
                 
-                # Create prettytable
                 table = PrettyTable()
                 table.field_names = data[0]
                 
                 for row in data[1:]:
                     table.add_row(row)
                 
-                print(table)
+                return str(table)
                 
         except Exception as e:
-            print(f"❌ Error: {e}")
+            return f"❌ Error: {e}"
     
-    def search_student(self):
-        """Search and display specific student"""
-        print("\n" + "="*50)
-        print("SEARCH STUDENT")
-        print("="*50)
-        
-        student_id = input("Enter Student ID to search: ").strip()
-        
+    def search_student_automated(self, student_id):
+        """Search and display specific student (automated)"""
         try:
             with open(self.csv_file, 'r') as file:
                 reader = csv.DictReader(file)
-                found = False
-                
                 for row in reader:
                     if row['Student_ID'] == student_id:
-                        found = True
-                        print(f"\n✓ Student Found!")
-                        print(f"ID: {row['Student_ID']}")
-                        print(f"Name: {row['Name']}")
-                        print(f"Math: {row['Math']}")
-                        print(f"Science: {row['Science']}")
-                        print(f"English: {row['English']}")
-                        print(f"Social Studies: {row['Social_Studies']}")
-                        print(f"Computer: {row['Computer']}")
-                        print(f"Total: {row['Total']}/500")
-                        print(f"Percentage: {row['Percentage']}%")
-                        print(f"Grade: {row['Grade']}")
-                        break
+                        result = f"✓ Student Found!\n"
+                        result += f"ID: {row['Student_ID']}\n"
+                        result += f"Name: {row['Name']}\n"
+                        result += f"Math: {row['Math']}\n"
+                        result += f"Science: {row['Science']}\n"
+                        result += f"English: {row['English']}\n"
+                        result += f"Social Studies: {row['Social_Studies']}\n"
+                        result += f"Computer: {row['Computer']}\n"
+                        result += f"Total: {row['Total']}/500\n"
+                        result += f"Percentage: {row['Percentage']}%\n"
+                        result += f"Grade: {row['Grade']}"
+                        return result
+                return f"❌ No student found with ID: {student_id}"
                 
-                if not found:
-                    print(f"❌ No student found with ID: {student_id}")
-                    
         except Exception as e:
-            print(f"❌ Error: {e}")
+            return f"❌ Error: {e}"
     
-    def generate_report_card(self):
-        """Generate formatted report card for a student"""
-        print("\n" + "="*50)
-        print(""*15+"Sethupathy Government Arts College, Ramanathapuram")
-        print("\n" + "="*50)
-        print("GENERATE REPORT CARD")
-        print("="*50)
-        
-        student_id = input("Enter Student ID: ").strip()
-        
+    def generate_report_card_automated(self, student_id):
+        """Generate report card for a student (automated)"""
         try:
             with open(self.csv_file, 'r') as file:
                 reader = csv.DictReader(file)
-                found = False
-                
                 for row in reader:
                     if row['Student_ID'] == student_id:
-                        found = True
-                        
-                        # Create report card
                         report = []
                         report.append("\n" + "="*60)
                         report.append(" " * 15 + "Sethupathy Government Arts College, Ramanathapuram")
@@ -178,7 +122,6 @@ class ReportCardSystem:
                         report.append(f"Date: {datetime.now().strftime('%Y-%m-%d')}")
                         report.append("\n" + "-"*60)
                         
-                        # Create subject marks table
                         table = PrettyTable()
                         table.field_names = ["Subject", "Marks Obtained", "Max Marks", "Grade"]
                         
@@ -201,35 +144,26 @@ class ReportCardSystem:
                         report.append(f"Percentage: {row['Percentage']}%")
                         report.append(f"Overall Grade: {row['Grade']}")
                         report.append("="*60)
-                        
-                        # Grade scale
                         report.append("\nGRADE SCALE:")
                         report.append("A+ (90-100) | A (80-89) | B (70-79)")
                         report.append("C (60-69) | D (50-59) | F (Below 50)")
                         report.append("="*60)
-                        
-                        # Print to console
-                        report_text = "\n".join(report)
-                        print(report_text)
                         
                         # Save to file
                         filename = f"report_card_{student_id}_{row['Name'].replace(' ', '_')}.txt"
                         filepath = os.path.join(self.reports_dir, filename)
                         
                         with open(filepath, 'w') as report_file:
-                            report_file.write(report_text)
+                            report_file.write("\n".join(report))
                         
-                        print(f"\n✓ Report card saved to: {filepath}")
-                        break
+                        return f"✓ Report card saved to: {filepath}"
+                return f"❌ No student found with ID: {student_id}"
                 
-                if not found:
-                    print(f"❌ No student found with ID: {student_id}")
-                    
         except Exception as e:
-            print(f"❌ Error: {e}")
+            return f"❌ Error: {e}"
     
     def display_menu(self):
-        """Display main menu"""
+        """Display main menu (for interactive use)"""
         print("\n" + "="*50)
         print(" " * 12 + "STUDENT REPORT CARD SYSTEM")
         print("="*50)
@@ -241,7 +175,7 @@ class ReportCardSystem:
         print("="*50)
     
     def run(self):
-        """Main program loop"""
+        """Main program loop (for interactive use)"""
         print("\n" + "*"*50)
         print(" " * 8 + "Welcome to Report Card System!")
         print("*"*50)
@@ -268,7 +202,7 @@ class ReportCardSystem:
             
             input("\nPress Enter to continue...")
 
-# Run the program
+# Run the program (comment out for automated use)
 if __name__ == "__main__":
     system = ReportCardSystem()
     # system.run()
